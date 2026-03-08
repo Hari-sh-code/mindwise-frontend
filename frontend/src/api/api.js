@@ -67,11 +67,4 @@ export const aiAPI = {
   analyzeJob: (jobData) => api.post('/ai/analyze-job', jobData),
 };
 
-// Notes APIs
-export const notesAPI = {
-  getAll: (jobId) => api.get(`/jobs/${jobId}/notes`),
-  create: (jobId, content) => api.post(`/jobs/${jobId}/notes`, { content }),
-  delete: (noteId) => api.delete(`/jobs/notes/${noteId}`),
-};
-
 export default api;

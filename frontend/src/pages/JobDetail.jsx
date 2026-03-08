@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { jobAPI } from '../api/api';
 import MatchScore from '../components/MatchScore';
 import SkillList from '../components/SkillList';
-import Notes from '../components/Notes';
 import StatusBadge from '../components/StatusBadge';
 import Loader from '../components/Loader';
 import toast from 'react-hot-toast';
@@ -211,11 +210,6 @@ const JobDetail = () => {
             </p>
           </div>
         )}
-
-        {/* Notes Section */}
-        <div className="mt-6">
-          <Notes jobId={id} />
-        </div>
       </div>
     </div>
   );

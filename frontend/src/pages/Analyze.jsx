@@ -10,7 +10,6 @@ const Analyze = () => {
     job_title: '',
     job_description: '',
     resume_drive_link: '',
-    user_notes: '',
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -27,13 +26,7 @@ const Analyze = () => {
     setLoading(true);
 
     try {
-      // Prepare data for AI (excluding user_notes from AI analysis)
-      const { user_notes, ...aiData } = formData;
-      
-      const response = await aiAPI.analyzeJob({
-        ...aiData,
-        user_notes: user_notes || undefined, // Include user_notes for DB storage only
-      });
+      const response = await aiAPI.analyzeJob(formData);
       
       // Backend returns { job_id, company_name, job_title, analysis }
       const jobId = response.data.job_id;
@@ -138,24 +131,6 @@ const Analyze = () => {
               </p>
             </div>
 
-            <div>
-              <label htmlFor="user_notes" className="block text-sm font-medium text-gray-300 mb-2">
-                Personal Notes (Optional)
-              </label>
-              <textarea
-                id="user_notes"
-                name="user_notes"
-                value={formData.user_notes}
-                onChange={handleChange}
-                rows="4"
-                className="w-full bg-dark-lighter border border-dark-border rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                placeholder="Add any personal notes about this application (these will NOT be sent to AI)"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                🔒 Private notes - stored in your account only, never shared with AI
-              </p>
-            </div>
-
             <div className="flex items-center justify-between pt-6 border-t border-dark-border">
               <button
                 type="button"
@@ -181,7 +156,6 @@ const Analyze = () => {
           <ul className="space-y-2 text-sm text-gray-300">
             <li>• Copy the complete job description for better analysis</li>
             <li>• Ensure your resume link is publicly accessible</li>
-            <li>• Use personal notes to track referrals, deadlines, or interview prep</li>
             <li>• Analysis typically takes 10-30 seconds depending on content length</li>
           </ul>
         </div>
