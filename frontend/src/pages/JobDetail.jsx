@@ -5,6 +5,8 @@ import MatchScore from '../components/MatchScore';
 import SkillList from '../components/SkillList';
 import StatusBadge from '../components/StatusBadge';
 import Loader from '../components/Loader';
+import InterviewFeedbackModal from '../components/InterviewFeedbackModal';
+import InterviewFeedbackView from '../components/InterviewFeedbackView';
 import toast from 'react-hot-toast';
 import { STATUS_OPTIONS } from '../utils/constants';
 
@@ -14,6 +16,8 @@ const JobDetail = () => {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [refreshFeedback, setRefreshFeedback] = useState(0);
 
   useEffect(() => {
     loadJob();
@@ -60,6 +64,10 @@ const JobDetail = () => {
     }
   };
 
+  const handleFeedbackSaved = () => {
+    setRefreshFeedback((prev) => prev + 1);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
@@ -102,6 +110,14 @@ const JobDetail = () => {
             </div>
 
             <div className="mt-4 md:mt-0 flex space-x-2">
+              {job.status === 'rejected' && (
+                <button
+                  onClick={() => setFeedbackModalOpen(true)}
+                  className="px-4 py-2 bg-accent hover:bg-accent-dark text-white rounded-lg transition-colors font-medium"
+                >
+                  + Add Interview Feedback
+                </button>
+              )}
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -210,7 +226,25 @@ const JobDetail = () => {
             </p>
           </div>
         )}
+
+        {/* Interview Feedback Section */}
+        {job.status === 'rejected' && (
+          <div className="mt-16 space-y-6">
+            <h2 className="text-3xl font-bold text-white">Interview Experience & Improvement</h2>
+
+            {/* Interview Feedback View */}
+            <InterviewFeedbackView jobId={id} refreshTrigger={refreshFeedback} />
+          </div>
+        )}
       </div>
+
+      {/* Interview Feedback Modal */}
+      <InterviewFeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={() => setFeedbackModalOpen(false)}
+        jobId={id}
+        onFeedbackSaved={handleFeedbackSaved}
+      />
     </div>
   );
 };

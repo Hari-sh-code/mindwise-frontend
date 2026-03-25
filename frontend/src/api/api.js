@@ -67,4 +67,11 @@ export const aiAPI = {
   analyzeJob: (jobData) => api.post('/ai/analyze-job', jobData),
 };
 
+// Interview Feedback APIs
+export const interviewFeedbackAPI = {
+  submit: (jobId, feedbackData) => api.post(`/jobs/${jobId}/interview-feedback`, feedbackData),
+  get: (jobId) => api.get(`/jobs/${jobId}/interview-feedback`),
+  generateImprovementPlan: (jobId) => api.post(`/jobs/${jobId}/improvement-plan`),
+};
+
 export default api;

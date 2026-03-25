@@ -8,6 +8,27 @@ export const STATUS_OPTIONS = [
   { value: 'rejected', label: 'Rejected', color: 'bg-red-500' },
 ];
 
+export const INTERVIEW_ROUND_TYPES = [
+  'Online Assessment',
+  'Technical Interview',
+  'System Design',
+  'Behavioral',
+  'HR',
+  'Take Home Assignment',
+];
+
+export const INTERVIEW_DIFFICULTY_LEVELS = [
+  'Easy',
+  'Medium',
+  'Hard',
+  'Very Hard',
+];
+
+export const INTERVIEW_RESULT_OPTIONS = [
+  'Pass',
+  'Fail',
+];
+
 export const getStatusColor = (status) => {
   const statusObj = STATUS_OPTIONS.find(s => s.value === status);
   return statusObj ? statusObj.color : 'bg-gray-500';
