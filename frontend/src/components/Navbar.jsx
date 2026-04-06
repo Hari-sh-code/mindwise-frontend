@@ -36,6 +36,12 @@ const Navbar = () => {
                   Analyze Job
                 </Link>
                 <Link
+                  to="/resumes"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Resumes
+                </Link>
+                <Link
                   to="/profile"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
