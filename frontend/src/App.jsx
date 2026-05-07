@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import Analyze from './pages/Analyze';
 import JobDetail from './pages/JobDetail';
 import Profile from './pages/Profile';
+import ResumePage from './pages/ResumePage';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -57,6 +58,15 @@ function App() {
               element={
                 <PrivateRoute>
                   <Profile />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="/resumes"
+              element={
+                <PrivateRoute>
+                  <ResumePage />
                 </PrivateRoute>
               }
             />

@@ -48,26 +48,94 @@ export const BasicInfoForm = ({ initialData, onClose, onSubmit, loading }) => {
 // Skill Form — fields: skill_name, skill_type
 // ============================================================================
 export const SkillForm = ({ initialData, onClose, onSubmit, loading }) => {
-  const [formData, setFormData] = useState({ skill_name: '', skill_type: 'Technical' });
+  const STANDARD_CATEGORIES = [
+    "Programming Languages",
+    "Frameworks & Libraries",
+    "Databases",
+    "Tools & Technologies",
+    "Core Computer Science",
+    "Domain Skills",
+    "Soft Skills",
+    "Others"
+  ];
+
+  const [formData, setFormData] = useState({
+    skill_name: '',
+    skill_type: 'Programming Languages'
+  });
+  const [customCategory, setCustomCategory] = useState('');
+  const [isCustom, setIsCustom] = useState(false);
+
   useEffect(() => {
-    if (initialData) setFormData({ skill_name: initialData.skill_name || '', skill_type: initialData.skill_type || 'Technical' });
+    if (initialData) {
+      const isStandard = STANDARD_CATEGORIES.includes(initialData.skill_type);
+      setFormData({
+        skill_name: initialData.skill_name || '',
+        skill_type: isStandard ? initialData.skill_type : 'Others'
+      });
+      if (!isStandard && initialData.skill_type) {
+        setCustomCategory(initialData.skill_type);
+        setIsCustom(true);
+      }
+    }
   }, [initialData]);
+
+  const handleCategoryChange = (e) => {
+    const val = e.target.value;
+    setFormData({ ...formData, skill_type: val });
+    setIsCustom(val === 'Others');
+    if (val !== 'Others') setCustomCategory('');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const finalCategory = isCustom && customCategory.trim()
+      ? customCategory.trim()
+      : formData.skill_type;
+    onSubmit({ ...formData, skill_type: finalCategory });
+  };
+
   return (
-    <ProfileModal title={initialData ? "Edit Skill" : "Add Skill"} onClose={onClose} onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} loading={loading}>
-      <Input label="Skill Name" required placeholder="e.g., Python, React, SQL" value={formData.skill_name} onChange={(e) => setFormData({ ...formData, skill_name: e.target.value })} />
+    <ProfileModal
+      title={initialData ? "Edit Skill" : "Add Skill"}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      loading={loading}
+    >
+      <Input
+        label="Skill Name"
+        required
+        placeholder="e.g., Python, React, SQL"
+        value={formData.skill_name}
+        onChange={(e) => setFormData({ ...formData, skill_name: e.target.value })}
+      />
+
       <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1">Skill Type</label>
+        <label className="block text-sm font-medium text-gray-400 mb-1">
+          Skill Category
+        </label>
         <select
           value={formData.skill_type}
-          onChange={(e) => setFormData({ ...formData, skill_type: e.target.value })}
+          onChange={handleCategoryChange}
           className="w-full bg-dark border border-dark-border rounded px-3 py-2 text-white focus:outline-none focus:border-primary"
         >
-          <option value="Technical">Technical</option>
-          <option value="Language">Language</option>
-          <option value="Soft">Soft</option>
-          <option value="Other">Other</option>
+          {STANDARD_CATEGORIES.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
         </select>
       </div>
+
+      {/* Custom category input — only shown when "Others" selected */}
+      {isCustom && (
+        <Input
+          label="Custom Category Name"
+          required
+          placeholder="e.g., Cloud Services, ML Frameworks"
+          value={customCategory}
+          onChange={(e) => setCustomCategory(e.target.value)}
+          helperText="This will be used as the category heading in your resume"
+        />
+      )}
     </ProfileModal>
   );
 };
@@ -99,13 +167,13 @@ export const ProjectForm = ({ initialData, onClose, onSubmit, loading }) => {
 // Experience Form — fields: company_name, role, duration, description
 // ============================================================================
 export const ExperienceForm = ({ initialData, onClose, onSubmit, loading }) => {
-  const [formData, setFormData] = useState({ 
-    company_name: '', 
-    role: '', 
-    duration: '', 
-    start_date: '', 
-    end_date: '', 
-    description: '' 
+  const [formData, setFormData] = useState({
+    company_name: '',
+    role: '',
+    duration: '',
+    start_date: '',
+    end_date: '',
+    description: ''
   });
   const [isCurrent, setIsCurrent] = useState(false);
 
@@ -127,7 +195,7 @@ export const ExperienceForm = ({ initialData, onClose, onSubmit, loading }) => {
     e.preventDefault();
     const submissionData = { ...formData };
     if (isCurrent) {
-        submissionData.end_date = null;
+      submissionData.end_date = null;
     }
     onSubmit(submissionData);
   };
@@ -136,28 +204,28 @@ export const ExperienceForm = ({ initialData, onClose, onSubmit, loading }) => {
     <ProfileModal title={initialData ? "Edit Experience" : "Add Experience"} onClose={onClose} onSubmit={handleSubmit} loading={loading}>
       <Input label="Company" required placeholder="Acme Corp" value={formData.company_name} onChange={(e) => setFormData({ ...formData, company_name: e.target.value })} />
       <Input label="Role / Title" required placeholder="Software Engineer" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} />
-      
+
       <div className="grid grid-cols-2 gap-4">
-        <Input 
-          label="Start Date" 
-          type="date" 
-          required 
-          value={formData.start_date || ""} 
-          onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} 
+        <Input
+          label="Start Date"
+          type="date"
+          required
+          value={formData.start_date || ""}
+          onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
         />
         <div className="flex flex-col">
           <label className="block text-sm font-medium text-gray-400 mb-1">End Date</label>
-          <input 
-            type="date" 
-            value={formData.end_date || ""} 
+          <input
+            type="date"
+            value={formData.end_date || ""}
             disabled={isCurrent}
             min={formData.start_date || ""}
-            onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} 
+            onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
             className="w-full bg-dark border border-dark-border rounded px-3 py-2 text-white focus:outline-none focus:border-primary disabled:opacity-50"
           />
         </div>
       </div>
-      
+
       <div className="flex items-center mb-1">
         <input
           type="checkbox"
@@ -181,17 +249,37 @@ export const ExperienceForm = ({ initialData, onClose, onSubmit, loading }) => {
 // Education Form — fields: college, degree, year
 // ============================================================================
 export const EducationForm = ({ initialData, onClose, onSubmit, loading }) => {
-  const [formData, setFormData] = useState({ college: '', degree: '', year: '' });
+  const [formData, setFormData] = useState({ college: '', degree: '', year: '', institution_type: 'college' });
   useEffect(() => {
     if (initialData) setFormData({
       college: initialData.college || '',
       degree: initialData.degree || '',
       year: initialData.year || '',
+      institution_type: initialData.institution_type || 'college',
     });
   }, [initialData]);
   return (
     <ProfileModal title={initialData ? "Edit Education" : "Add Education"} onClose={onClose} onSubmit={(e) => { e.preventDefault(); onSubmit({ ...formData, year: formData.year ? parseInt(formData.year) : null }); }} loading={loading}>
-      <Input label="College / University" required placeholder="MIT" value={formData.college} onChange={(e) => setFormData({ ...formData, college: e.target.value })} />
+      <div>
+        <label className="block text-sm font-medium text-gray-400 mb-1">
+          Institution Type
+        </label>
+        <select
+          value={formData.institution_type || 'college'}
+          onChange={(e) => setFormData({ ...formData, institution_type: e.target.value })}
+          className="w-full bg-dark border border-dark-border rounded px-3 py-2 text-white focus:outline-none focus:border-primary mb-2"
+        >
+          <option value="college">College / University</option>
+          <option value="school">School (HSLC / HSC)</option>
+        </select>
+        <Input
+          label="Institution Name"
+          required
+          placeholder={formData.institution_type === 'school' ? 'St. Joseph School' : 'MIT'}
+          value={formData.college}
+          onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+        />
+      </div>
       <Input label="Degree" required placeholder="B.Tech, M.Sc, MBA" value={formData.degree} onChange={(e) => setFormData({ ...formData, degree: e.target.value })} />
       <Input label="Graduation Year" type="number" placeholder="2024" value={formData.year} onChange={(e) => setFormData({ ...formData, year: e.target.value })} />
     </ProfileModal>
@@ -216,7 +304,7 @@ export const CertificationForm = ({ initialData, onClose, onSubmit, loading }) =
     <ProfileModal title={initialData ? "Edit Certification" : "Add Certification"} onClose={onClose} onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} loading={loading}>
       <Input label="Certification Title" required placeholder="AWS Certified Developer" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
       <Input label="Issuer / Organization" required placeholder="Amazon Web Services" value={formData.issuer} onChange={(e) => setFormData({ ...formData, issuer: e.target.value })} />
-      <Input label="Issue Date" type="date" value={formData.issue_date || ""} onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}/>
+      <Input label="Issue Date" type="date" value={formData.issue_date || ""} onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })} />
       <Input label="Credential ID" placeholder="ABCD-1234 (optional)" value={formData.credential_id} onChange={(e) => setFormData({ ...formData, credential_id: e.target.value })} />
       <Input label="Credential URL" type="url" placeholder="https://verify.example.com/..." value={formData.credential_url} onChange={(e) => setFormData({ ...formData, credential_url: e.target.value })} />
     </ProfileModal>
@@ -252,8 +340,8 @@ export const SocialLinkForm = ({ initialData, onClose, onSubmit, loading }) => {
 
   useEffect(() => {
     if (initialData) {
-      setFormData({ 
-        platform: initialData.platform || '', 
+      setFormData({
+        platform: initialData.platform || '',
         url: initialData.url || '',
         username: initialData.username || ''
       });
